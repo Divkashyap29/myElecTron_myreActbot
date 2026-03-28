@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kaashvi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #09090f;
+      color: #e2e8f0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0c0015 0%, #150025 50%, #0c0015 100%);
+      padding: 14px 24px;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #e84393, #a855f7, #e84393, transparent);
+      opacity: 0.5;
+    }
+
+    .header-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(232, 67, 147, 0.4);
+      box-shadow: 0 4px 15px rgba(232, 67, 147, 0.25);
+      flex-shrink: 0;
+    }
+
+    .header-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-text h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0abfc, #e84393, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.3px;
+    }
+
+    .header-text span {
+      font-size: 11px;
+      color: #7c6f9b;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      margin-left: auto;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Messages Area */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scroll-behavior: smooth;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 0%, rgba(232, 67, 147, 0.03) 0%, transparent 60%);
+    }
+
+    /* Watermark cat in background */
+    #messages::before {
+      content: '';
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 120px;
+      height: 120px;
+      background: url('kaashvi-img.jpg') center/contain no-repeat;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #messages::-webkit-scrollbar { width: 5px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: rgba(232, 67, 147, 0.25); border-radius: 3px; }
+    #messages::-webkit-scrollbar-thumb:hover { background: rgba(232, 67, 147, 0.4); }
+
+    /* Welcome Message */
+    .welcome {
+      text-align: center;
+      padding: 40px 20px 30px;
+      color: #7c6f9b;
+    }
+
+    .welcome-mascot {
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 20px;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 8px 25px rgba(232, 67, 147, 0.3));
+    }
+
+    .welcome-mascot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .welcome h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0abfc, #e84393);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #8b80a8;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .suggestion {
+      background: rgba(232, 67, 147, 0.06);
+      border: 1px solid rgba(232, 67, 147, 0.18);
+      border-radius: 24px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #d4a5c9;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .suggestion:hover {
+      background: rgba(232, 67, 147, 0.15);
+      color: #f0abfc;
+      border-color: rgba(232, 67, 147, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(232, 67, 147, 0.12);
+    }
+
+    /* Message Bubbles */
+    .msg {
+      max-width: 78%;
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.65;
+      animation: fadeIn 0.35s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #9b1b7a, #c2185b, #e84393);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      font-weight: 400;
+      box-shadow: 0 4px 15px rgba(232, 67, 147, 0.25);
+    }
+
+    .agent-msg {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #14101e, #1a1428);
+      border: 1px solid rgba(232, 67, 147, 0.12);
+      border-bottom-left-radius: 4px;
+    }
+
+    .agent-msg .label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      color: #e84393;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .agent-msg .content {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #d4d0e0;
+    }
+
+    /* Thinking Animation */
+    .thinking {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 18px;
+    }
+
+    .thinking span {
+      font-size: 12px;
+      color: #e84393;
+      margin-right: 10px;
+      font-weight: 500;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: linear-gradient(135deg, #e84393, #f0abfc);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dot:nth-child(3) { animation-delay: 0.3s; }
+    .dot:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* Input Area */
+    .input-area {
+      background: linear-gradient(135deg, #0c0015, #100018);
+      border-top: 1px solid rgba(232, 67, 147, 0.1);
+      padding: 18px 28px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    #input {
+      flex: 1;
+      padding: 15px 22px;
+      border-radius: 28px;
+      background: rgba(232, 67, 147, 0.05);
+      color: #f1f0f7;
+      border: 1px solid rgba(232, 67, 147, 0.15);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    #input:focus {
+      border-color: rgba(232, 67, 147, 0.45);
+      background: rgba(232, 67, 147, 0.08);
+      box-shadow: 0 0 20px rgba(232, 67, 147, 0.08);
+    }
+
+    #input::placeholder {
+      color: #5b4a5e;
+    }
+
+    #send-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #9b1b7a, #c2185b, #e84393);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(232, 67, 147, 0.3);
+    }
+
+    #send-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 25px rgba(232, 67, 147, 0.5);
+    }
+
+    #send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #send-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-avatar"><img src="kaashvi-img.jpg" alt="Kaashvi" /></div>
+    <div class="header-text">
+      <h1>Kaashvi</h1>
+      <span>AI Assistant can manage Google Calendar + Notion right now</span>
+    </div>
+    <div class="status-dot"></div>
+  </div>
+
+  <div id="messages">
+    <div class="welcome">
+      <div class="welcome-mascot"><img src="kaashvi-img.jpg" alt="Kaashvi mascot" /></div>
+      <h2>Hey Divyanshi!</h2>
+      <p>I'm Kaashvi, Divyanshi's personal AI assistant.<br>I can manage her calendar, search Notion, and more.</p>
+      <div class="suggestions">
+        <div class="suggestion" onclick="useSuggestion(this)">What's on my calendar today?</div>
+        <div class="suggestion" onclick="useSuggestion(this)">Find my free time this week</div>
+        <div class="suggestion" onclick="useSuggestion(this)">Create a Notion page</div>
+        <div class="suggestion" onclick="useSuggestion(this)">Search my Notion workspace</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <input id="input" placeholder="Ask Kaashvi anything..." autocomplete="off" />
+    <button id="send-btn" onclick="send()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('send-btn');
+    let isFirstMessage = true;
+
+    function useSuggestion(el) {
+      inputEl.value = el.textContent;
+      send();
+    }
+
+    async function send() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      if (isFirstMessage) {
+        const welcome = document.querySelector('.welcome');
+        if (welcome) welcome.remove();
+        isFirstMessage = false;
+      }
+
+      const userDiv = document.createElement('div');
+      userDiv.className = 'msg user-msg';
+      userDiv.textContent = text;
+      messagesEl.appendChild(userDiv);
+
+      inputEl.value = '';
+      inputEl.disabled = true;
+      sendBtn.disabled = true;
+
+      const thinkingDiv = document.createElement('div');
+      thinkingDiv.className = 'msg agent-msg thinking';
+      thinkingDiv.id = 'thinking';
+      thinkingDiv.innerHTML = '<span>Kaashvi is thinking</span><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      messagesEl.appendChild(thinkingDiv);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      try {
+        const reply = await window.kaashvi.sendMessage(text);
+        const agentDiv = document.createElement('div');
+        agentDiv.className = 'msg agent-msg';
+        agentDiv.innerHTML = '<div class="label">Kaashvi</div><div class="content">' + escapeHtml(reply) + '</div>';
+        thinkingDiv.replaceWith(agentDiv);
+      } catch (err) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'msg agent-msg';
+        errorDiv.innerHTML = '<div class="label">Kaashvi</div><div class="content">Sorry, something went wrong. Please try again.</div>';
+        thinkingDiv.replaceWith(errorDiv);
+      }
+
+      inputEl.disabled = false;
+      sendBtn.disabled = false;
+      inputEl.focus();
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) send();
+    });
+  </script>
+</body>
+</html>
