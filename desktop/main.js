@@ -20,7 +20,8 @@ ipcMain.handle('send-message',async(event,userMessage)=>{
     return new Promise((resolve,reject)=>{
         const py = spawn('python',[path.join(__dirname,'..','main.py'),'--message',userMessage]);
         let output = '';
-        py.stdout.on('data',data=>console.erroe('python error:', data.toString()));
+        py.stdout.on('data',data=>{output += data.toString();});
+        py.stderr.on('data',data=> console.error('python error:',data.toString()));
         py.on('close',code=>{
             if(code==0)resolve(output.trimEnd());
             else reject(new Error('Agent process failed'));
@@ -28,14 +29,3 @@ ipcMain.handle('send-message',async(event,userMessage)=>{
     });
 });
 
-const py = spawn('python',[path.join(__dirname,'..','main.py'),'--message',userMessage]);
-
-let output='';
-py.stdout.on('data',data=>{output += data.toString();});
-
-py.stderr.on('data',data=> console.error('python error:',data.toString()));
-
-py.on('close',code=>{ 
-    if ( code === 0)resolve(output.trim());
-    else reject(new Error('Agent process failed'));
-});

@@ -30,7 +30,7 @@ When you are done, set Action to FINAL_ANSWER and put your reply in Action Input
 def parse_action(text: str) -> tuple[str, dict]:
     """Extract Action and Action Input from LLM response."""
     action_match = re.search(r'Action:\s*(.+)', text)
-    input_match = re.search(r'Action Input:\s*(\{.*?\})', text, re.DOTALL)
+    input_match = re.search(r'Action Input:\s*(\{.*\})', text, re.DOTALL)
     action = action_match.group(1).strip() if action_match else 'FINAL_ANSWER'
     try:
         params = json.loads(input_match.group(1)) if input_match else {}
@@ -39,28 +39,36 @@ def parse_action(text: str) -> tuple[str, dict]:
     return action, params
 
 
-def run_agent(user_message: str) -> str:
-    messages = [{'role': 'user', 'content': user_message}]
+def run_agent(user_message: str, conversation_history: list = None) -> tuple[str, list]:
+    if conversation_history is None:
+        conversation_history = []
+    conversation_history.append({'role': 'user', 'content': user_message})
+    messages = list(conversation_history)
     scratchpad = ''
 
     for iteration in range(MAX_ITERATIONS):
+        if scratchpad:
+            current_messages = messages + [{'role': 'user', 'content': scratchpad}]
+        else:
+            current_messages = messages
+
         response = client.messages.create(
             model='claude-sonnet-4-20250514',
             max_tokens=1024,
             system=build_system_prompt(),
-            messages=messages + [{'role': 'user', 'content': scratchpad}] if scratchpad else messages
+            messages=current_messages
         )
         llm_output = response.content[0].text
         action, params = parse_action(llm_output)
 
         if action == 'FINAL_ANSWER':
-            return params.get('answer', llm_output)
+            answer = params.get('answer') or params.get('response') or next(iter(params.values()), llm_output)
+            conversation_history.append({'role': 'assistant', 'content': answer})
+            return answer, conversation_history
 
-        # Find and execute the tool
         tool = next((t for t in TOOL_REGISTRY if t.name == action), None)
         observation = tool.execute(**params) if tool else f'Error: tool {action} not found'
 
-        # Append to scratchpad so the LLM sees what happened
         scratchpad += f'\n{llm_output}\nObservation: {observation}\n'
 
-    return 'Max iterations reached without a final answer.'
+    return 'Max iterations reached without a final answer.', conversation_history
