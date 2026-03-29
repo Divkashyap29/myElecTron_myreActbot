@@ -7,6 +7,26 @@ load_dotenv()
 client = Anthropic()
 MAX_ITERATIONS = 10
 
+def count_tokens(conversation_history: list) -> int:
+    return sum(len(msg['content']) for msg in conversation_history) // 4
+
+
+def trim_history(conversation_history: list, max_tokens: int = 10000, archive_path ='memory_archive.json'):
+    archive = [] 
+    if count_tokens(conversation_history) <= max_tokens:
+        return conversation_history 
+    if os.path.exists(archive_path):
+        with open( archive_path,'r') as f:
+            archive = json.load(f)
+    else:
+     archive = []
+    while count_tokens(conversation_history) > max_tokens and len(conversation_history) > 2:
+        archive.extend(conversation_history[:2])
+        conversation_history = conversation_history[2:]
+    with open(archive_path, 'w') as f:
+        json.dump(archive, f)
+    return conversation_history
+
 
 def build_system_prompt() -> str:
     tool_descriptions = '\n'.join(
@@ -14,16 +34,15 @@ def build_system_prompt() -> str:
         for t in TOOL_REGISTRY
     )
     return f'''You are Kaashvi, a helpful AI assistant build specially for you user that is divyanshi kashyap and with access to tools.
-Always respond in this exact format:
+                Always respond in this exact format: 
+               Thought: (your reasoning about what to do next)
+                Action: (tool name, or FINAL_ANSWER if done)
+              Action Input: (a JSON object with the tool parameters)
 
-Thought: (your reasoning about what to do next)
-Action: (tool name, or FINAL_ANSWER if done)
-Action Input: (a JSON object with the tool parameters)
+            Available tools:
+            {tool_descriptions}
 
-Available tools:
-{tool_descriptions}
-
-When you are done, set Action to FINAL_ANSWER and put your reply in Action Input.
+            When you are done, set Action to FINAL_ANSWER and put your reply in Action Input.
 '''
 
 
@@ -43,6 +62,7 @@ def run_agent(user_message: str, conversation_history: list = None) -> tuple[str
     if conversation_history is None:
         conversation_history = []
     conversation_history.append({'role': 'user', 'content': user_message})
+    conversation_history = trim_history(conversation_history)
     messages = list(conversation_history)
     scratchpad = ''
 
@@ -68,7 +88,6 @@ def run_agent(user_message: str, conversation_history: list = None) -> tuple[str
 
         tool = next((t for t in TOOL_REGISTRY if t.name == action), None)
         observation = tool.execute(**params) if tool else f'Error: tool {action} not found'
-
         scratchpad += f'\n{llm_output}\nObservation: {observation}\n'
 
     return 'Max iterations reached without a final answer.', conversation_history

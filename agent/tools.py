@@ -24,11 +24,12 @@ class EchoTool(Tool):
 
 from integrations.calendar_tools import CreateEventTool, ListEventsTool, DeleteEventTool, FindFreeTimeTool
 from integrations.notion_tools import NotionCreatePageTool, NotionSearchTool
-
+from integrations.memory_tools import SearchMemoryTool  
 TOOL_REGISTRY = [EchoTool(),
      CreateEventTool(),
       ListEventsTool(),
       DeleteEventTool(),
       FindFreeTimeTool(),
        NotionCreatePageTool(),
-      NotionSearchTool(),]
+      NotionSearchTool(),
+      SearchMemoryTool()]
