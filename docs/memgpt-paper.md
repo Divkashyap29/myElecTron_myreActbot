@@ -98,32 +98,7 @@ User sends message
 [Save updated history]  ← to RAM (CLI) or JSON file (Electron)
 ```
 
-## Before vs After
 
-**Before (no memory):**
-```
-User: "My best friend is Sanskriti"
-Kaashvi: "Nice to know!"
-User: "Create dinner with my best friend tomorrow"
-Kaashvi: "Who is your best friend?" ← AMNESIA
-```
-
-**After (with MemGPT memory):**
-```
-User: "My best friend is Sanskriti"
-Kaashvi: "Nice to know!"
-User: "Create dinner with my best friend tomorrow"
-Kaashvi: "Created dinner event with Sanskriti for tomorrow at 7pm!" ← REMEMBERS
-```
-
-**After (with archive search — long conversations):**
-```
-Turn 1-50: Various conversations (old turns archived to memory_archive.json)
-Turn 51: "What was my friend's name again?"
-Kaashvi: calls search_memory("friend")
-         → finds archived Turn 1: "My best friend is Sanskriti"
-         → "Your friend's name is Sanskriti!"  ← RETRIEVES FROM ARCHIVE
-```
 
 ## What I would improve next
 - **Phase D1 (Recursive Summarization):** Instead of just archiving old messages raw, summarize them first. "Turns 1-10 summary: User lives in Fredericton, has a friend named Sanskriti, likes butter chicken." This saves even more tokens.

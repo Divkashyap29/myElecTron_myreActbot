@@ -18,7 +18,7 @@ app.whenReady().then(createWindow);
 
 ipcMain.handle('send-message',async(event,userMessage)=>{
     return new Promise((resolve,reject)=>{
-        const py = spawn('python',[path.join(__dirname,'..','main.py'),'--message',userMessage]);
+        const py = spawn('python',[path.join(__dirname,'..','main.py'),'--message',userMessage],{cwd:path.join(__dirname,'..'),env:{...process.env,PYTHONIOENCODING:'utf-8'}});
         let output = '';
         py.stdout.on('data',data=>{output += data.toString();});
         py.stderr.on('data',data=> console.error('python error:',data.toString()));

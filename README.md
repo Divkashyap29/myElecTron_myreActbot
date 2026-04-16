@@ -1,97 +1,253 @@
 # Kaashvi
 
-Kaashvi is a personal AI assistant that runs locally on my computer. It is built from scratch using Python and the Anthropic API with no frameworks like LangChain. Kaashvi is also a Hindu name meaning bright, shining and radiant.
+A personal AI agent built from scratch using Python and the Anthropic API. No frameworks. Each capability comes from reading, understanding, and implementing a research paper. 18 papers total, from Transformers to multi-agent coordination.
 
-The goal of this project is to read AI research papers one by one, understand the concepts deeply, and then implement them into Kaashvi. Each paper adds a new capability to the agent. This is not just a coding project, it is a learning journey through the foundations of modern AI.
+For detailed explanations of how each component works, see [docs/project-notes.md](docs/project-notes.md). For deep dives into individual papers, see [docs/react-paper.md](docs/react-paper.md) and [docs/memgpt-paper.md](docs/memgpt-paper.md).
 
-## What Kaashvi Can Do
+## Completed Papers
 
-Kaashvi can manage my Google Calendar (create events, list events, delete events, find free time), create and search pages in Notion, and remember context across conversations using a memory system inspired by the MemGPT paper. It runs as a CLI tool or as a desktop app through Electron with a custom pink cat mascot UI.
+| # | Paper | Year | Key Concept | Implemented In |
+|---|-------|------|-------------|----------------|
+| 1 | [ReAct](docs/react-paper.md) | Yao 2023 | Reasoning + Acting loop (Thought/Action/Observation) | `agent/react_loop.py` |
+| 2 | [MemGPT](docs/memgpt-paper.md) | Packer 2023 | Memory tiers — RAM + hard drive for LLM context management | `agent/react_loop.py`, `integrations/memory_tools.py`, `main.py` |
 
-## Architecture
+## Upcoming Papers
+
+| # | Paper | Year | Phase | What I'll Learn | What It Adds to Kaashvi |
+|---|-------|------|-------|-----------------|-------------------------|
+| 3 | Attention Is All You Need | Vaswani 2017 | B1 | Transformer architecture, self-attention | Foundational understanding of how every LLM works |
+| 4 | GPT-3: Few-Shot Learners | Brown 2020 | B2 | In-context learning, few-shot examples | Better prompt engineering with few-shot examples |
+| 5 | Chain-of-Thought | Wei 2022 | B3 | Step-by-step reasoning | Improved reasoning quality in the ReAct loop |
+| 6 | InstructGPT | Ouyang 2022 | B4 | RLHF, why system prompts work | Understanding why Kaashvi follows instructions |
+| 7 | BERT | Devlin 2018 | B5 | Embeddings, semantic understanding | Foundation for all embedding-based features |
+| 8 | Sentence-BERT | Reimers 2019 | F2 | Sentence-level embeddings, semantic similarity | Semantic task matching, smarter memory search |
+| 9 | Plan-and-Solve | Wang 2023 | C2 | Planning before acting | Kaashvi plans multi-step tasks before executing |
+| 10 | Toolformer | Schick 2023 | C4 | Self-taught tool selection | Kaashvi picks the right tool more often |
+| 11 | Reflexion | Shinn 2023 | E2 | Self-evaluation and retry | Kaashvi detects its own mistakes and corrects them |
+| 12 | RAG | Lewis 2020 | F1 | Retrieval Augmented Generation | Semantic memory search replaces keyword search |
+| 13 | Tree of Thoughts | Yao 2023 | G1 | Multiple reasoning paths | Kaashvi explores several plans and picks the best one |
+| 14 | Voyager | Wang 2023 | G2 | Learning from experience, skill library | Kaashvi remembers successful strategies and reuses them |
+| 15 | Isolation Forest | Liu 2008 | H4 | Unsupervised anomaly detection | Detects when schedule deviates from healthy patterns |
+| 16 | Generative Agents | Park 2023 | J1 | Multi-agent simulation, agent-to-agent communication | Two Kaashvi instances coordinate between users |
+| 17 | Cognitive Load Theory | Sweller 1988 | H1 | Mental effort measurement, intrinsic vs extraneous load | Behavioral proxy model for cognitive load without wearables |
+| 18 | Contextual Bandits | Li 2010 | H5 | Online learning, exploration vs exploitation | Learns the best moment to send notifications |
+
+## Roadmap
 
 ```
-User Input
+PHASE 0 — FOUNDATION (DONE)
+|
+|   Phase 1: ReAct Loop ................................. DONE
+|   Phase 2: Google Calendar (4 tools) .................. DONE
+|   Phase 3: Notion (2 tools) ........................... DONE
+|   Phase 4: Electron Desktop App ....................... DONE
+|   Phase A1: MemGPT Conversation Memory ................ DONE
+|
+v
+PHASE B — PROMPT ENGINEERING AND THEORY
+|
+|   B1: Attention Is All You Need ..... understand transformers
+|   B2: GPT-3 Few-Shot ............... few-shot prompt examples
+|   B3: Chain-of-Thought ............. step-by-step reasoning
+|   B4: InstructGPT .................. RLHF, instruction tuning
+|   B5: BERT ......................... embeddings foundation
+|
+v
+PHASE C — AGENT INTELLIGENCE
+|
+|   C1: ReAct audit .................. fix edge cases, error retry
+|   C2: Plan-and-Solve ............... plan before acting
+|   C4: Toolformer ................... smarter tool selection
+|
+v
+PHASE D — MEMORY UPGRADES
+|
+|   D1: Recursive Summarization ...... summarize old messages before archiving
+|   D2: Accurate Token Counting ...... replace char/4 with real tokenizer
+|   D3: Model Routing ................ Haiku for simple tasks, Sonnet for reasoning
+|
+v
+PHASE E — SELF-IMPROVEMENT
+|
+|   E2: Reflexion .................... detect and fix own mistakes
+|
+v
+PHASE F — SEMANTIC UNDERSTANDING
+|
+|   F1: RAG .......................... embedding-based memory retrieval
+|   F2: Sentence-BERT ................ semantic similarity for task matching
+|   F3: ChromaDB Vector Store ........ replace JSON files with vector database
+|
+v
+PHASE G — ADVANCED REASONING
+|
+|   G1: Tree of Thoughts ............. explore multiple reasoning paths
+|   G2: Voyager ...................... learn from experience, skill library
+|
+v
+PHASE H — ML PIPELINE
+|
+|   H1: Cognitive Load Model ......... typing cadence + task switching + calendar
+|                                      density as behavioral proxies, real-time
+|                                      score without wearables
+|   H2: Productivity Predictor ....... trains on calendar + completion patterns,
+|                                      predicts optimal deep work windows and
+|                                      burnout risk 2 weeks ahead
+|   H3: NLP Task Classifier .......... fine-tuned BERT reads Notion notes,
+|                                      classifies by urgency, project, and
+|                                      cognitive demand automatically
+|   H4: Anomaly Detection ............ Isolation Forest detects schedule
+|                                      deviations from healthy patterns,
+|                                      proactively suggests restructuring
+|   H5: Intervention Timing .......... contextual bandits learn the exact
+|                                      moment you are most receptive to a
+|                                      notification based on behavioral signals
+|   H6: Semantic Task Matching ....... embedding model surfaces related past
+|                                      tasks and relevant context when you
+|                                      start something new
+|
+v
+PHASE I — SYSTEM ARCHITECTURE
+|
+|   I1: SQLite + ChromaDB ............ local-first storage, zero cloud dependency
+|   I2: Encrypted Storage ............ AES-256, all personal data stays private
+|   I3: localhost REST API ............ other tools can query schedule and task state
+|   I4: Rust Background Daemon ........ syncs Calendar and Notion every 5 minutes,
+|                                      processes new data through ML pipeline silently
+|   I5: Plugin System ................ extensible architecture, anyone can add
+|                                      Slack, Linear, GitHub Issues via plugins
+|
+v
+PHASE J — MULTI-AGENT COORDINATION
+|
+|   J1: Generative Agents ............ two Kaashvi instances negotiate meeting
+|                                      times, surface shared context, identify
+|                                      dependency conflicts between users
+|
+v
+PHASE K — RESEARCH AND PUBLICATION
+|
+|   K1: Study Design ................. controlled study, 50 UNB students,
+|                                      25 use Kaashvi vs 25 manual planning
+|   K2: Data Collection .............. measure tasks completed, deadline misses,
+|                                      deep work hours, stress levels
+|   K3: Analysis and Paper ........... statistical analysis, write findings
+|   K4: CHI Submission ............... submit to Conference on Human Factors
+|                                      in Computing Systems
+|   K5: Cognitive Load Paper ......... behavioral proxy measurement published
+|                                      as a separate methodology paper
+|
+v
+PHASE L — PRODUCTION
+|
+|   L1: Installers ................... .dmg / .exe / .AppImage
+|   L2: Auto-Update System ........... seamless updates
+|   L3: Open Source ................... public repo with plugin documentation
+|   L4: Sentry Crash Reporting ........ production error tracking
+```
+
+## How Papers Connect
+
+```
+Attention Is All You Need (foundation)
     |
     v
-main.py (CLI or Electron entry point)
+GPT-3 (scaling + few-shot)
     |
-    v
-agent/react_loop.py (ReAct loop engine)
+    +---> InstructGPT (RLHF + instruction following)
     |
-    +--> build_system_prompt()      [System Instructions]
-    +--> conversation_history       [Conversational Context]
-    +--> scratchpad                 [Working Context]
-    +--> count_tokens()             [Token Awareness]
-    +--> trim_history()             [FIFO Eviction + Archiving]
+    +---> Chain-of-Thought (step-by-step reasoning)
+    |         |
+    |         v
+    |     ReAct (reasoning + tool use) <--- IMPLEMENTED
+    |         |
+    |         +---> Plan-and-Solve (planning before acting)
+    |         |         |
+    |         |         v
+    |         |     Tree of Thoughts (multiple plans)
+    |         |
+    |         +---> Reflexion (self-evaluation + retry)
+    |         |
+    |         +---> Voyager (learning from experience)
     |
-    v
-agent/tools.py (Tool Registry, 8 tools)
+    +---> BERT (embeddings)
+              |
+              +---> Sentence-BERT (sentence-level similarity)
+              |         |
+              |         v
+              |     Semantic Task Matching (H6)
+              |
+              +---> RAG (retrieval with embeddings)
+                        |
+                        v
+                    ChromaDB Vector Store (F3)
+
+MemGPT (memory management) <--- IMPLEMENTED
     |
-    +--> EchoTool                   [Testing]
-    +--> CreateEventTool            [Google Calendar]
-    +--> ListEventsTool             [Google Calendar]
-    +--> DeleteEventTool            [Google Calendar]
-    +--> FindFreeTimeTool           [Google Calendar]
-    +--> NotionCreatePageTool       [Notion]
-    +--> NotionSearchTool           [Notion]
-    +--> SearchMemoryTool           [MemGPT Memory]
+    +---> Uses: ReAct loop for control flow
+    +---> Uses: RAG for semantic memory search
+    +---> Future: Recursive summarization (D1)
+    +---> Future: ChromaDB replaces JSON archive (F3)
+
+Cognitive Load Theory (behavioral science)
+    |
+    +---> Cognitive Load Model (H1)
+    +---> Productivity Predictor (H2)
+    +---> Intervention Timing via Contextual Bandits (H5)
+
+Isolation Forest (unsupervised ML)
+    |
+    +---> Anomaly Detection on schedule patterns (H4)
+
+Generative Agents (multi-agent systems)
+    |
+    +---> Multi-Agent Coordination (J1)
 ```
 
-## Research Papers Implemented
+## Final Vision
 
-For detailed notes on each paper, see the [docs/research-papers.md](docs/research-papers.md) file.
+When all phases are complete, Kaashvi is a personal AI agent with:
 
-### 1. ReAct, Reasoning and Acting (Yao 2023)
+**Intelligence**
+1. ReAct reasoning loop with planning, self-evaluation, and learning from experience
+2. Tree of Thoughts exploration for complex decisions
+3. Skill library that remembers successful strategies and reuses them
 
-Kaashvi is built on the ReAct paper which introduces the idea of combining reasoning and acting in a single loop. Most AI systems either think without doing anything, or use tools without explaining why. ReAct does both together. The agent produces a Thought (why it wants to do something), then an Action (which tool to call), then receives an Observation (the result from that tool), and repeats this cycle until it has a final answer. In my code, this loop lives in agent/react_loop.py inside the run_agent() function. The scratchpad variable accumulates each Thought/Action/Observation step so the LLM can see its own reasoning history while solving one task.
+**Integrations**
+4. Google Calendar management (create, list, delete events, find free time)
+5. Notion integration (create pages, search, auto-classify tasks by urgency and cognitive demand)
+6. Plugin system for Slack, Linear, GitHub Issues, and anything else
 
-### 2. MemGPT, LLMs as Operating Systems (Packer 2023)
+**Memory**
+7. Semantic memory search powered by embeddings and ChromaDB vectors
+8. Recursive summarization of old conversations
+9. Semantic task matching that surfaces related past work when you start something new
 
-The ReAct loop gives Kaashvi memory within a single task, but it had no memory across multiple turns of conversation. If you asked Kaashvi to create a movie event and then said "make it at 7pm", she would have no idea what "it" referred to because every call to run_agent() started with a blank message list. MemGPT introduces the concept of memory tiers, inspired by how computers have RAM for fast temporary storage and a hard drive for long term permanent storage. The LLM's context window acts like RAM, it can only hold so much at once. I implemented this by keeping conversation history in a list and passing all previous messages to the LLM on every turn, so Kaashvi remembers what was discussed earlier. When the history gets too long, old messages are evicted using a FIFO (First In First Out) policy and archived to a JSON file. Kaashvi can then search through archived conversations using the SearchMemoryTool, enabling multi hop retrieval across long conversation histories.
+**ML Models**
+10. Cognitive load measurement from behavioral signals (no wearables needed)
+11. Personal productivity predictor trained on your own patterns (deep work windows, burnout risk)
+12. Anomaly detection on schedule health
+13. Intervention timing model that learns when you are most receptive
 
-![MemGPT Architecture](images/image.png)
+**Architecture**
+14. Local-first, zero cloud dependency (SQLite + ChromaDB)
+15. AES-256 encrypted storage for all personal data
+16. Rust background daemon syncing data and running ML pipeline silently
+17. localhost REST API so other tools can query your state
 
-Three types of context in MemGPT that map to Kaashvi:
+**Multi-Agent**
+18. Two Kaashvi instances coordinate between users (negotiate meetings, surface shared context, detect dependency conflicts)
 
-1. System Instructions (Read Only): The build_system_prompt() function in react_loop.py. These are the base instructions telling the LLM who it is, what tools it has, and how to format its responses.
+**Research**
+19. Controlled study with 50 UNB students, published results
+20. Behavioral cognitive load measurement published as methodology paper
+21. Submitted to CHI (Conference on Human Factors in Computing Systems)
 
-2. Conversational Context (Read Only, FIFO eviction): The conversation_history list. Recent messages between user and assistant. When it gets too long, the oldest messages are archived to memory_archive.json using trim_history() and can be searched later.
-
-3. Working Context (Writable by LLM): The scratchpad variable. The agent fills it with Thought/Action/Observation traces while solving one task. It grows with each iteration of the ReAct loop.
-
-MemGPT evaluates memory on two criteria. Consistency measures whether the agent remembers facts and preferences from past interactions. Engagingness measures whether the agent uses memory to personalize responses. Kaashvi passes both: she remembers facts like friend names and preferences across turns, and uses them naturally when creating calendar events or answering questions.
-
-## Project Structure
-
-```
-kaashvi/
-    agent/
-        react_loop.py           Core ReAct loop, token counting, history trimming
-        tools.py                Tool base class and registry (8 tools)
-    integrations/
-        google_auth.py          Google OAuth2 authentication
-        calendar_tools.py       Google Calendar tools (4 tools)
-        notion_tools.py         Notion tools (2 tools)
-        memory_tools.py         SearchMemoryTool for archived conversations
-    desktop/
-        main.js                 Electron main process
-        preload.js              IPC bridge
-        index.html              Chat UI (pink purple theme, cat mascot)
-    docs/
-        research-papers.md      Overview of all papers studied
-        react-paper.md          Deep dive into ReAct implementation
-        memgpt-paper.md         Deep dive into MemGPT implementation
-    main.py                     Entry point (CLI mode + Electron mode)
-```
-
-## Engineering Principles
-
-### Red Green Refactor (TDD)
-
-1. RED: Write a test that defines the expected behavior, run it, watch it fail because the feature does not exist yet.
-2. GREEN: Write the minimum implementation code needed to make that failing test pass, nothing more.
-3. REFACTOR: Clean up the code (remove duplication, improve naming) while re running the test to ensure it still passes.
+**Production**
+22. Desktop app with .dmg / .exe / .AppImage installers
+23. Auto-update system
+24. Open source with plugin documentation
+25. Sentry crash reporting
 
 ## Setup
 
