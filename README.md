@@ -2,7 +2,25 @@
 
 A personal AI agent built from scratch using Python and the Anthropic API. No frameworks. Each capability comes from reading, understanding, and implementing a research paper. 25 papers total (and growing), from Transformers to multi-agent coordination, with a benchmark suite that measures improvement after every paper.
 
+**24 tools** across 9 categories: Calendar, Gmail, Notion, Memory, Web Search, Weather, File System, Tasks/Reminders, and Shell.
+
 For detailed explanations of how each component works, see [docs/project-notes.md](docs/project-notes.md). For deep dives into individual papers, see [docs/react-paper.md](docs/react-paper.md) and [docs/memgpt-paper.md](docs/memgpt-paper.md).
+
+## Current Capabilities
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| Google Calendar | `calendar_create_event`, `calendar_list_events`, `calendar_delete_event`, `calendar_find_free_time` | Full calendar management |
+| Gmail | `gmail_send`, `gmail_read`, `gmail_search` | Send, read inbox, search emails |
+| Notion | `notion_create_page`, `notion_search` | Create pages, search workspace |
+| Memory | `search_memory` | Search archived conversations (MemGPT) |
+| Web Search | `web_search` | DuckDuckGo search (no API key needed) |
+| Weather | `get_weather` | Current weather via wttr.in (no API key needed) |
+| File System | `read_file`, `write_file`, `list_files` | File ops with path traversal protection |
+| Reminders | `set_reminder`, `list_reminders`, `check_reminders` | Persistent reminders (JSON storage) |
+| Tasks | `add_task`, `list_tasks`, `complete_task`, `delete_task` | Persistent to-do list (JSON storage) |
+| Shell | `run_command` | Execute commands with safety blocklist |
+| Testing | `echo` | Echo tool for testing |
 
 ## Completed Papers
 
@@ -49,6 +67,9 @@ PHASE 0 — FOUNDATION (DONE)
 |   Phase 3: Notion (2 tools) ........................... DONE
 |   Phase 4: Electron Desktop App ....................... DONE
 |   Phase A1: MemGPT Conversation Memory ................ DONE
+|   Phase A2: Tool Expansion (8 → 24 tools) ............. DONE
+|       Gmail (3), Web Search (1), Weather (1),
+|       File System (3), Reminders (3), Tasks (4), Shell (1)
 |
 v
 PHASE B — PROMPT ENGINEERING AND THEORY
@@ -666,8 +687,10 @@ When all phases are complete, Kaashvi is a personal AI agent with:
 ### Integrations
 
 4. Google Calendar management (create, list, delete events, find free time)
-5. Notion integration (create pages, search, auto-classify tasks by urgency and cognitive demand)
-6. Plugin system for Slack, Linear, GitHub Issues, and anything else
+5. Gmail (send, read, search emails)
+6. Notion integration (create pages, search, auto-classify tasks by urgency and cognitive demand)
+7. Web search (DuckDuckGo), weather (wttr.in), file management, tasks, reminders, shell
+8. Plugin system for Slack, Linear, GitHub Issues, and anything else
 
 ### Memory
 
@@ -751,4 +774,10 @@ When all phases are complete, Kaashvi is a personal AI agent with:
 
 ## Setup
 
-Requires Python 3.10+, an Anthropic API key, Google Calendar API credentials, and a Notion integration token. Create a .env file with your API keys and run main.py to start the CLI, or cd into desktop/ and run npm start for the Electron app.
+Requires Python 3.10+, an Anthropic API key, Google Calendar API credentials, and a Notion integration token.
+
+```bash
+pip install anthropic python-dotenv google-auth-oauthlib google-api-python-client duckduckgo-search requests
+```
+
+Create a `.env` file with your API keys and run `python main.py` to start the CLI, or `cd desktop/ && npm start` for the Electron app.
