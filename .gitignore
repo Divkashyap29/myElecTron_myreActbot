@@ -13,3 +13,9 @@ desktop/package-lock.json
 conversation_history.json
 credentials.json
 .vscode/
+ai-engineer_roadmap.pdf
+tasks.json
+reminders.json
+integrations/__pycache__/*
+agent/__pycache__/*
+integrations/__pycache__/google_auth.cpython-314.pyc

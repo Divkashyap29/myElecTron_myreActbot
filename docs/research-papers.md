@@ -10,5 +10,7 @@ For detailed explanations of the current architecture, ReAct loop, and MemGPT im
 |-------|-------|
 | ReAct (Yao 2023) | [react-paper.md](react-paper.md) |
 | MemGPT (Packer 2023) | [memgpt-paper.md](memgpt-paper.md) |
+| Attention Is All You Need (Vaswani 2017) | [attention-is-all-you-need/notes.md](attention-is-all-you-need/notes.md) |
+| GPT-3: Few-Shot Learners (Brown 2020) | [gpt3-paper.md](gpt3-paper.md) |
 
 As each new paper is studied and implemented, a deep dive document will be added here.

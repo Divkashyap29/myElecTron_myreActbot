@@ -1,4 +1,4 @@
-from dataclasses import dataclass 
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -10,7 +10,7 @@ class Tool:
 
     def execute( self, **kwargs)-> str:
         raise NotImplementedError
-    
+
 class EchoTool(Tool):
       def __init__(self):
           super().__init__(
@@ -24,12 +24,48 @@ class EchoTool(Tool):
 
 from integrations.calendar_tools import CreateEventTool, ListEventsTool, DeleteEventTool, FindFreeTimeTool
 from integrations.notion_tools import NotionCreatePageTool, NotionSearchTool
-from integrations.memory_tools import SearchMemoryTool  
-TOOL_REGISTRY = [EchoTool(),
-     CreateEventTool(),
-      ListEventsTool(),
-      DeleteEventTool(),
-      FindFreeTimeTool(),
-       NotionCreatePageTool(),
-      NotionSearchTool(),
-      SearchMemoryTool()]
+from integrations.memory_tools import SearchMemoryTool
+from integrations.gmail_tools import GmailSendTool, GmailReadTool, GmailSearchTool
+from integrations.web_search_tools import WebSearchTool
+from integrations.weather_tools import WeatherTool
+from integrations.file_tools import ReadFileTool, WriteFileTool, ListFilesTool
+from integrations.reminder_tools import SetReminderTool, ListRemindersTool, CheckRemindersTool
+from integrations.task_tools import AddTaskTool, ListTasksTool, CompleteTaskTool, DeleteTaskTool
+from integrations.shell_tools import RunCommandTool
+
+TOOL_REGISTRY = [
+    EchoTool(),
+    # Calendar
+    CreateEventTool(),
+    ListEventsTool(),
+    DeleteEventTool(),
+    FindFreeTimeTool(),
+    # Notion
+    NotionCreatePageTool(),
+    NotionSearchTool(),
+    # Memory
+    SearchMemoryTool(),
+    # Gmail
+    GmailSendTool(),
+    GmailReadTool(),
+    GmailSearchTool(),
+    # Web Search
+    WebSearchTool(),
+    # Weather
+    WeatherTool(),
+    # File Management
+    ReadFileTool(),
+    WriteFileTool(),
+    ListFilesTool(),
+    # Reminders
+    SetReminderTool(),
+    ListRemindersTool(),
+    CheckRemindersTool(),
+    # Tasks
+    AddTaskTool(),
+    ListTasksTool(),
+    CompleteTaskTool(),
+    DeleteTaskTool(),
+    # Shell
+    RunCommandTool(),
+]

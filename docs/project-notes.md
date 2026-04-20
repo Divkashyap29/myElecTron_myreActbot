@@ -10,7 +10,7 @@ The goal of this project is to read AI research papers one by one, understand th
 
 ## What Kaashvi Can Do Right Now
 
-Kaashvi can manage my Google Calendar (create events, list events, delete events, find free time), create and search pages in Notion, and remember context across conversations using a memory system inspired by the MemGPT paper. It runs as a CLI tool or as a desktop app through Electron with a custom pink cat mascot UI.
+Kaashvi has 24 tools across 9 categories. She can manage Google Calendar (create, list, delete events, find free time), send and search Gmail, create and search Notion pages, remember context across conversations (MemGPT), search the web (DuckDuckGo), check weather (wttr.in), read/write/list files, manage tasks and reminders (persistent JSON), and run shell commands (with safety blocklist). She runs as a CLI tool or as a desktop app through Electron with a custom pink cat mascot UI.
 
 ## Architecture
 
@@ -30,7 +30,7 @@ agent/react_loop.py (ReAct loop engine)
     +--> trim_history()             [FIFO Eviction + Archiving]
     |
     v
-agent/tools.py (Tool Registry, 8 tools)
+agent/tools.py (Tool Registry, 24 tools)
     |
     +--> EchoTool                   [Testing]
     +--> CreateEventTool            [Google Calendar]
@@ -40,6 +40,22 @@ agent/tools.py (Tool Registry, 8 tools)
     +--> NotionCreatePageTool       [Notion]
     +--> NotionSearchTool           [Notion]
     +--> SearchMemoryTool           [MemGPT Memory]
+    +--> GmailSendTool              [Gmail]
+    +--> GmailReadTool              [Gmail]
+    +--> GmailSearchTool            [Gmail]
+    +--> WebSearchTool              [DuckDuckGo]
+    +--> WeatherTool                [wttr.in]
+    +--> ReadFileTool               [File System]
+    +--> WriteFileTool              [File System]
+    +--> ListFilesTool              [File System]
+    +--> SetReminderTool            [Reminders]
+    +--> ListRemindersTool          [Reminders]
+    +--> CheckRemindersTool         [Reminders]
+    +--> AddTaskTool                [Tasks]
+    +--> ListTasksTool              [Tasks]
+    +--> CompleteTaskTool           [Tasks]
+    +--> DeleteTaskTool             [Tasks]
+    +--> RunCommandTool             [Shell]
 ```
 
 ## How ReAct Works (Yao 2023)
@@ -67,13 +83,20 @@ MemGPT evaluates memory on two criteria. Consistency measures whether the agent 
 ```
 kaashvi/
     agent/
-        react_loop.py           Core ReAct loop, token counting, history trimming
-        tools.py                Tool base class and registry (8 tools)
+        react_loop.py           Core ReAct loop, token counting, history trimming, API retry
+        tools.py                Tool base class and registry (24 tools)
     integrations/
-        google_auth.py          Google OAuth2 authentication
+        google_auth.py          Google OAuth2 authentication (Calendar + Gmail scopes)
         calendar_tools.py       Google Calendar tools (4 tools)
+        gmail_tools.py          Gmail tools — send, read, search (3 tools)
         notion_tools.py         Notion tools (2 tools)
         memory_tools.py         SearchMemoryTool for archived conversations
+        web_search_tools.py     DuckDuckGo web search (1 tool)
+        weather_tools.py        Weather via wttr.in (1 tool)
+        file_tools.py           Read, write, list files with path safety (3 tools)
+        reminder_tools.py       Set, list, check reminders — reminders.json (3 tools)
+        task_tools.py           Add, list, complete, delete tasks — tasks.json (4 tools)
+        shell_tools.py          Run shell commands with blocklist safety (1 tool)
     desktop/
         main.js                 Electron main process
         preload.js              IPC bridge
@@ -82,7 +105,9 @@ kaashvi/
         project-notes.md        This file. Detailed explanations of how everything works.
         react-paper.md          Deep dive into ReAct implementation
         memgpt-paper.md         Deep dive into MemGPT implementation
-    main.py                     Entry point (CLI mode + Electron mode)
+    main.py                     Entry point (CLI mode + Electron mode + startup reminder check)
+    tasks.json                  Persistent task storage (auto-created)
+    reminders.json              Persistent reminder storage (auto-created)
 ```
 
 ## Engineering Principles
@@ -96,3 +121,74 @@ kaashvi/
 ## Setup
 
 Requires Python 3.10+, an Anthropic API key, Google Calendar API credentials, and a Notion integration token. Create a .env file with your API keys and run main.py to start the CLI, or cd into desktop/ and run npm start for the Electron app.
+
+---
+
+## Session Log
+
+### 2026-04-20 — 16 New Tools (8 → 24 total)
+
+**What was built:**
+
+Expanded Kaashvi from 8 tools to 24 tools in one session. Added 7 new integration files covering Gmail, web search, weather, file management, reminders, tasks, and shell commands.
+
+**Files created (7):**
+| File | Tools | Description |
+|------|-------|-------------|
+| `integrations/gmail_tools.py` | gmail_send, gmail_read, gmail_search | Gmail API — send, read inbox, search |
+| `integrations/web_search_tools.py` | web_search | DuckDuckGo search, no API key needed |
+| `integrations/weather_tools.py` | get_weather | wttr.in free weather API |
+| `integrations/file_tools.py` | read_file, write_file, list_files | File ops with home-dir path safety |
+| `integrations/reminder_tools.py` | set_reminder, list_reminders, check_reminders | Persistent reminders (reminders.json) |
+| `integrations/task_tools.py` | add_task, list_tasks, complete_task, delete_task | Persistent to-do list (tasks.json) |
+| `integrations/shell_tools.py` | run_command | Shell exec with dangerous-command blocklist |
+
+**Files modified (3):**
+| File | Change |
+|------|--------|
+| `integrations/google_auth.py` | Extracted `_get_creds()`, added Gmail scopes, added `get_gmail_service()` |
+| `agent/tools.py` | Imported + registered all 16 new tools (8 → 24 total) |
+| `main.py` | Added `check_reminders` at startup of interactive mode |
+
+**Bug fix:**
+| File | Fix |
+|------|-----|
+| `agent/react_loop.py` | Added retry logic (3 attempts, exponential backoff) for Anthropic API `overloaded_error` |
+
+**Dependencies added:** `pip install duckduckgo-search requests`
+
+**Google re-auth:** Deleted `token.pickle` to re-authorize with new Gmail scopes (gmail.send, gmail.readonly). One-time setup.
+
+**Safety features:**
+- File tools: all paths resolved with `os.path.realpath()`, must be within user home directory
+- Shell tool: blocklist prevents rm, del, format, shutdown, kill, etc. 30s timeout. Output truncated at 3000 chars.
+- Reminders/tasks: stored as JSON in project root, persist across sessions
+
+**Tested and working:**
+- Task tools: add/list/complete/delete cycle verified (tasks.json created correctly)
+- Reminder tools: set/list/check cycle verified (reminders.json created correctly)
+- Shell tool: `python --version` returns output, `rm -rf /` correctly blocked
+- File tools: reads files, lists directories, path traversal protection confirmed
+- Calendar: re-authed with Gmail scopes, reads events successfully
+- All 10 files pass Python syntax check
+
+**Not yet tested (need live API):**
+- Gmail send/read/search (auth working, need to test actual email ops)
+- Web search (needs `duckduckgo-search` runtime test)
+- Weather (needs network test with wttr.in)
+
+**Total tool count: 24**
+| Category | Tools | Count |
+|----------|-------|-------|
+| Calendar | create, list, delete, find_free_time | 4 |
+| Gmail | send, read, search | 3 |
+| Notion | create_page, search | 2 |
+| Memory | search_memory | 1 |
+| Web Search | web_search | 1 |
+| Weather | get_weather | 1 |
+| File System | read_file, write_file, list_files | 3 |
+| Reminders | set, list, check | 3 |
+| Tasks | add, list, complete, delete | 4 |
+| Shell | run_command | 1 |
+| Testing | echo | 1 |
+| **Total** | | **24** |
